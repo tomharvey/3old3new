@@ -2,9 +2,10 @@
 
 ![This is not Tom](https://igcdn-photos-a-a.akamaihd.net/hphotos-ak-xfp1/t51.2885-19/10914141_331183007092200_258329467_a.jpg)
 
-Tom's Instragram profile is a weekly feed of good music - 3 old albums, 3 new ones. This script will add the albums to a spotify playlist.
+Tommy G's Instragram profile is a weekly feed of good music - 3 old albums, 3 new ones. This script will add the albums to a spotify playlist.
 
 [Instagram](https://instagram.com/tomkgallacher/)
+
 [Spotify](https://open.spotify.com/user/11121814260/playlist/7aF4BzWOiTraYffMDkBl24)
 
 ## Usage
