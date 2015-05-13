@@ -13,7 +13,7 @@ def add_missing_tracks_to_playlist():
 
         album_track_ids = sp.list_track_ids(album, artist)
         if len(album_track_ids) == 0:
-            print "NO TRACKS FOUND FOR: %s - %s" % (artist, album)
+            print "No tracks found for: %s - %s" % (artist, album)
         else:
             existing_tracks = sp.get_playlist_track_ids()
 

@@ -1,7 +1,8 @@
 from threeOldThreeNew.settings import (INSTAGRAM_AUTH,
                                        INSTAGRAM_USER,
-                                       MEDIA_COUNT)
+                                       TARGET_TAG)
 from instagram.client import InstagramAPI
+from urlparse import parse_qs
 
 
 class InstagramClient:
@@ -25,12 +26,16 @@ class InstagramClient:
     def recent_media(self):
         # Get a list of the most recent posts.
         user_id = self.get_user_id()
-        get_media = self.api.user_recent_media(user_id=user_id,
-                                               count=MEDIA_COUNT)
-        media = get_media[0]
-
-        if len(media) < MEDIA_COUNT:
-            self.get_more_media(media, get_media[1])
+        get_media, next_page = self.api.user_recent_media(user_id=user_id,
+                                                          count=30)
+        media = get_media
+        while next_page:  # Paginate using the query string returned
+            qry_str = next_page.split("?")[-1]
+            max_id = parse_qs(qry_str)['max_id'][0]
+            get_media, next_page = self.api.user_recent_media(user_id=user_id,
+                                                              count=30,
+                                                              max_id=max_id)
+            media = media + get_media
 
         return media
 
@@ -38,7 +43,12 @@ class InstagramClient:
         # Add the album artist details to self.recent_albums
         recent_media = []
         for media in self.recent_media():
-            artist, album = self.parse_name(media.caption.text)
+            try:
+                caption_text = media.caption.text
+                artist, album = self.parse_name(caption_text)
+            except AttributeError:
+                print "Cannot get caption text for %s" % media.link
+                artist, album = (None, None)
             if artist and album:
                 recent_media.append((artist, album))
         return recent_media
@@ -47,14 +57,11 @@ class InstagramClient:
         # Parse album and artist from the comment
         try:
             tag, artist, album = comment_text.split("-")
-            if tag.strip() != "#3old3new":
+            if tag.strip() != TARGET_TAG:
                 raise ValueError  # lazy way to skip non 3old3new posts
         except ValueError:
             # if there are too few dashes, move on
+            print "Cannot parse %s " % comment_text
             return [None, None]
 
         return artist.strip(), album.strip()
-
-    def get_more_media(self, media, pagination):
-        # TODO, not sure what the max count is here
-        return media
